@@ -1,0 +1,17 @@
+# Gradle / Kotlin
+backend/build/
+backend/.gradle/
+backend/out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Env files (never commit secrets)
+.env
+*.env
