@@ -16,3 +16,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+jwt:
+  secret: "openex-dev-super-secret-signing-key-change-in-production-1234567890"
+  expiration-ms: 3600000
