@@ -13,6 +13,21 @@ jobs:
       run:
         working-directory: backend
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: openex
+          POSTGRES_PASSWORD: openex_dev_password
+          POSTGRES_DB: openex
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U openex"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
