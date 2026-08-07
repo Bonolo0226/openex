@@ -27,7 +27,8 @@ data class OrderResponse(
 class OrderService(
 	private val orderRepository: OrderRepository,
 	private val idempotencyKeyRepository: IdempotencyKeyRepository,
-	private val objectMapper: ObjectMapper
+	private val objectMapper: ObjectMapper,
+	private val matchingEngineService: MatchingEngineService
 ) {
 
 	@Transactional
@@ -59,13 +60,15 @@ class OrderService(
 		)
 		orderRepository.save(order)
 
+		val matchedOrder = matchingEngineService.submitAndMatch(order)
+
 		val response = OrderResponse(
-			id = order.id,
-			side = order.side,
-			type = order.type,
-			price = order.price,
-			quantity = order.quantity,
-			status = order.status
+			id = matchedOrder.id,
+			side = matchedOrder.side,
+			type = matchedOrder.type,
+			price = matchedOrder.price,
+			quantity = matchedOrder.quantity,
+			status = matchedOrder.status
 		)
 
 		idempotencyKeyRepository.save(
