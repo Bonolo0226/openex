@@ -10,7 +10,8 @@ import java.util.concurrent.locks.ReentrantLock
 class MatchingEngineService(
 	private val orderRepository: OrderRepository,
 	private val ledgerService: LedgerService,
-	private val transactionTemplate: TransactionTemplate
+	private val transactionTemplate: TransactionTemplate,
+	private val orderBookBroadcaster: com.openex.realtime.OrderBookBroadcaster
 ) {
 	private val lock = ReentrantLock()
 
@@ -54,6 +55,7 @@ class MatchingEngineService(
 				status = if (candidate.quantity - tradeQuantity <= BigDecimal.ZERO) OrderStatus.FILLED else OrderStatus.OPEN
 			)
 			orderRepository.save(updatedCandidate)
+			orderBookBroadcaster.broadcastOrderUpdate(updatedCandidate)
 
 			currentOrder = currentOrder.copy(
 				quantity = remainingQuantity,
@@ -62,6 +64,7 @@ class MatchingEngineService(
 		}
 
 		orderRepository.save(currentOrder)
+		orderBookBroadcaster.broadcastOrderUpdate(currentOrder)
 		return currentOrder
 	}
 
