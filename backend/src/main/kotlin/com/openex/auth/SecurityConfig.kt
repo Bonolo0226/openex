@@ -23,6 +23,7 @@ class SecurityConfig(
 	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 		http
 			.csrf { it.disable() }
+			.cors { it.configurationSource(corsConfigurationSource()) }
 			.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 			.authorizeHttpRequests { auth ->
 				auth
@@ -32,5 +33,18 @@ class SecurityConfig(
 			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
 
 		return http.build()
+	}
+
+	@Bean
+	fun corsConfigurationSource(): org.springframework.web.cors.CorsConfigurationSource {
+		val configuration = org.springframework.web.cors.CorsConfiguration()
+		configuration.allowedOrigins = listOf("http://localhost:5173")
+		configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+		configuration.allowedHeaders = listOf("*")
+		configuration.allowCredentials = true
+
+		val source = org.springframework.web.cors.UrlBasedCorsConfigurationSource()
+		source.registerCorsConfiguration("/**", configuration)
+		return source
 	}
 }
