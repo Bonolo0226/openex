@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import apiClient from '../api/client'
+import OrderBook from './OrderBook'
 
 function Trading() {
 	const [accounts, setAccounts] = useState([])
@@ -22,6 +23,7 @@ function Trading() {
 					setAccountId(response.data[0].accountId)
 				}
 			} catch (err) {
+				console.error('Failed to fetch accounts:', err)
 				setError('Could not load accounts.')
 			}
 		}
@@ -50,6 +52,7 @@ function Trading() {
 			})
 			setResult(response.data)
 		} catch (err) {
+			console.error('Failed to place order:', err)
 			setError('Order failed. Check your inputs and try again.')
 		} finally {
 			setSubmitting(false)
@@ -134,6 +137,8 @@ function Trading() {
 					<pre>{JSON.stringify(result, null, 2)}</pre>
 				</div>
 			)}
+
+			<OrderBook />
 		</div>
 	)
 }
