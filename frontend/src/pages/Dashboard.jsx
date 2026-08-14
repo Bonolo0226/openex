@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import apiClient from '../api/client'
+import PriceChart from '../components/PriceChart'
 
 function Dashboard() {
 	const [balances, setBalances] = useState([])
@@ -44,6 +45,9 @@ function Dashboard() {
 					</tbody>
 				</table>
 			)}
+
+			<h2>Market Price</h2>
+			<PriceChart />
 		</div>
 	)
 }

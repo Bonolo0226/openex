@@ -1,11 +1,13 @@
 from flask import Flask, jsonify
 from langchain_ollama import OllamaLLM
 from flask import request
+from flask_cors import CORS
 import numpy as np
 import pandas as pd
 from tools import get_wallet_balances
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:5173"])
 
 llm = OllamaLLM(model="phi3:mini")
 
