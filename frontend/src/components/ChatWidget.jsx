@@ -17,7 +17,7 @@ function ChatWidget() {
 		setSending(true)
 		try {
 			const response = await axios.post(
-				(import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:5000') + '/api/chat',
+				'http://localhost:5000/api/chat',
 				{ message: userMessage },
 				{ headers: token ? { Authorization: `Bearer ${token}` } : {} }
 			)
@@ -42,7 +42,7 @@ function ChatWidget() {
 						flexDirection: 'column',
 						marginBottom: '0.9rem',
 						padding: '1rem',
-						boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+						boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
 						animation: 'fadeIn 0.25s ease',
 					}}
 				>
@@ -58,8 +58,8 @@ function ChatWidget() {
 								key={index}
 								style={{
 									alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-									background: message.role === 'user' ? 'var(--gradient)' : 'rgba(255,255,255,0.05)',
-									color: message.role === 'user' ? '#06070d' : 'var(--text-primary)',
+									background: message.role === 'user' ? 'var(--gradient)' : 'rgba(127,127,127,0.08)',
+									color: message.role === 'user' ? 'var(--on-accent)' : 'var(--text-primary)',
 									padding: '0.55rem 0.8rem',
 									borderRadius: '14px',
 									maxWidth: '85%',
@@ -88,7 +88,7 @@ function ChatWidget() {
 					height: '56px',
 					borderRadius: '50%',
 					fontSize: '1.3rem',
-					boxShadow: '0 8px 24px rgba(124, 92, 255, 0.45)',
+					boxShadow: '0 8px 24px var(--accent-glow)',
 				}}
 			>
 				{open ? '✕' : '💬'}
