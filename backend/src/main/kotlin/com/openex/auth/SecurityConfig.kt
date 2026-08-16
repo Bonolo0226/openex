@@ -13,7 +13,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-	private val jwtAuthFilter: JwtAuthFilter
+	private val jwtAuthFilter: JwtAuthFilter,
+	@org.springframework.beans.factory.annotation.Value("\${cors.allowed-origins:http://localhost:5173}")
+	private val allowedOrigins: String
 ) {
 
 	@Bean
@@ -38,7 +40,7 @@ class SecurityConfig(
 	@Bean
 	fun corsConfigurationSource(): org.springframework.web.cors.CorsConfigurationSource {
 		val configuration = org.springframework.web.cors.CorsConfiguration()
-		configuration.allowedOrigins = listOf("http://localhost:5173")
+		configuration.allowedOrigins = allowedOrigins.split(",").map { it.trim() }
 		configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
 		configuration.allowedHeaders = listOf("*")
 		configuration.allowCredentials = true
