@@ -20,7 +20,7 @@ function PriceChart() {
 	useEffect(() => {
 		async function fetchMarketData() {
 			try {
-				const response = await axios.get('http://localhost:5000/api/market-data')
+				const response = await axios.get((import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:5000') + '/api/market-data')
 				const ticks = response.data
 
 				setChartData({

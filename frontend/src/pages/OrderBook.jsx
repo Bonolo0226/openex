@@ -8,61 +8,93 @@ function OrderBook() {
 
 	useEffect(() => {
 		const client = new Client({
-			webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+			webSocketFactory: () => new SockJS((import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/ws'),
 			onConnect: () => {
 				setConnected(true)
 				client.subscribe('/topic/orderbook', (message) => {
 					const update = JSON.parse(message.body)
-
 					setOrders((current) => {
 						const next = { ...current }
-
 						if (update.status === 'FILLED' || update.status === 'CANCELLED') {
 							delete next[update.orderId]
 						} else {
 							next[update.orderId] = update
 						}
-
 						return next
 					})
 				})
 			},
 		})
-
 		client.activate()
-
-		return () => {
-			client.deactivate()
-		}
+		return () => client.deactivate()
 	}, [])
 
 	const allOrders = Object.values(orders)
 	const bids = allOrders.filter((o) => o.side === 'BUY').sort((a, b) => b.price - a.price)
 	const asks = allOrders.filter((o) => o.side === 'SELL').sort((a, b) => a.price - b.price)
+	const maxQty = Math.max(1, ...allOrders.map((o) => Number(o.quantity)))
+
+	const rowStyle = (qty, color) => ({
+		position: 'relative',
+		display: 'flex',
+		justifyContent: 'space-between',
+		padding: '0.5rem 0.7rem',
+		fontSize: '0.85rem',
+		borderRadius: '6px',
+		overflow: 'hidden',
+		background: 'rgba(255,255,255,0.02)',
+	})
+
+	const depthBar = (qty, color) => ({
+		position: 'absolute',
+		left: 0,
+		top: 0,
+		bottom: 0,
+		width: `${Math.min(100, (Number(qty) / maxQty) * 100)}%`,
+		background: color,
+		opacity: 0.12,
+	})
 
 	return (
 		<div>
-			<p style={{ fontSize: '0.8rem', color: connected ? 'gray' : 'orange' }}>
-				{connected ? 'Connected to live order book' : 'Connecting...'}
-			</p>
-			<div style={{ display: 'flex', gap: '2rem', marginTop: '1rem' }}>
+			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem' }}>
+				<h2 className="card-title" style={{ margin: 0 }}>Live Order Book</h2>
+				<span className="badge" style={{ background: connected ? 'var(--green-bg)' : 'rgba(255,255,255,0.05)', color: connected ? 'var(--green)' : 'var(--text-secondary)' }}>
+					{connected && <span className="pulse-dot" />}
+					{connected ? 'Live' : 'Connecting...'}
+				</span>
+			</div>
+
+			<div className="grid-2">
 				<div>
-					<h3 style={{ color: 'green' }}>Bids</h3>
-					{bids.length === 0 && <p>No open bids</p>}
-					{bids.map((order) => (
-						<div key={order.orderId} style={{ color: 'green' }}>
-							{order.price} × {order.quantity}
-						</div>
-					))}
+					<div className="text-secondary" style={{ fontSize: '0.72rem', marginBottom: '0.6rem', display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+						<span>BID PRICE</span><span>QTY</span>
+					</div>
+					<div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+						{bids.length === 0 && <p className="text-secondary" style={{ fontSize: '0.85rem' }}>No open bids</p>}
+						{bids.map((order) => (
+							<div key={order.orderId} className="mono row-hover" style={{ ...rowStyle(order.quantity), color: 'var(--green)' }}>
+								<div style={depthBar(order.quantity, 'var(--green)')} />
+								<span style={{ position: 'relative' }}>{order.price}</span>
+								<span style={{ position: 'relative' }}>{order.quantity}</span>
+							</div>
+						))}
+					</div>
 				</div>
 				<div>
-					<h3 style={{ color: 'red' }}>Asks</h3>
-					{asks.length === 0 && <p>No open asks</p>}
-					{asks.map((order) => (
-						<div key={order.orderId} style={{ color: 'red' }}>
-							{order.price} × {order.quantity}
-						</div>
-					))}
+					<div className="text-secondary" style={{ fontSize: '0.72rem', marginBottom: '0.6rem', display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+						<span>ASK PRICE</span><span>QTY</span>
+					</div>
+					<div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+						{asks.length === 0 && <p className="text-secondary" style={{ fontSize: '0.85rem' }}>No open asks</p>}
+						{asks.map((order) => (
+							<div key={order.orderId} className="mono row-hover" style={{ ...rowStyle(order.quantity), color: 'var(--red)' }}>
+								<div style={depthBar(order.quantity, 'var(--red)')} />
+								<span style={{ position: 'relative' }}>{order.price}</span>
+								<span style={{ position: 'relative' }}>{order.quantity}</span>
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 		</div>
