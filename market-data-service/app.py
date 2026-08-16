@@ -5,9 +5,11 @@ from flask_cors import CORS
 import numpy as np
 import pandas as pd
 from tools import get_wallet_balances
+import os
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"])
+allowed_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+CORS(app, origins=allowed_origins)
 
 llm = OllamaLLM(model="phi3:mini")
 
