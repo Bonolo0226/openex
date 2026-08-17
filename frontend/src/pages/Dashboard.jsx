@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react'
 import apiClient from '../api/client'
 import PriceChart from '../components/PriceChart'
+import DepositForm from '../components/DepositForm'
 
 function Dashboard() {
 	const [balances, setBalances] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
+	const [depositOpen, setDepositOpen] = useState(false)
+
+	async function fetchBalances() {
+		try {
+			const response = await apiClient.get('/api/wallets')
+			setBalances(response.data)
+			setError('')
+		} catch (err) {
+			console.error('Failed to fetch balances:', err)
+			setError('Could not load balances. Are you logged in?')
+		} finally {
+			setLoading(false)
+		}
+	}
 
 	useEffect(() => {
-		async function fetchBalances() {
-			try {
-				const response = await apiClient.get('/api/wallets')
-				setBalances(response.data)
-			} catch (err) {
-				console.error('Failed to fetch balances:', err)
-				setError('Could not load balances. Are you logged in?')
-			} finally {
-				setLoading(false)
-			}
-		}
 		fetchBalances()
 	}, [])
 
@@ -36,7 +40,26 @@ function Dashboard() {
 
 			<div className="grid-2">
 				<div className="card">
-					<h2 className="card-title">Balances</h2>
+					<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.1rem' }}>
+						<h2 className="card-title" style={{ margin: 0, flex: 1 }}>Balances</h2>
+						<button
+							className="secondary"
+							onClick={() => setDepositOpen((v) => !v)}
+							style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem' }}
+						>
+							{depositOpen ? 'Cancel' : '+ Deposit'}
+						</button>
+					</div>
+
+					{depositOpen && (
+						<DepositForm
+							onDeposited={() => {
+								fetchBalances()
+								setDepositOpen(false)
+							}}
+						/>
+					)}
+
 					{loading && <p className="text-secondary">Loading...</p>}
 					{error && <p style={{ color: 'var(--red)', fontSize: '0.85rem' }}>{error}</p>}
 					{!loading && !error && balances.length === 0 && (
