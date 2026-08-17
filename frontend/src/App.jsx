@@ -14,7 +14,7 @@ function App() {
 		<BrowserRouter>
 			<Navigation />
 			<Routes>
-				<Route path="/" element={isLoggedIn ? <Dashboard /> : <LandingPage />} />
+				<Route path="/" element={isLoggedIn ? <Dashboard /> : <Landingpage />} />
 				<Route path="/trading" element={<Trading />} />
 				<Route path="/login" element={<Login />} />
 			</Routes>
