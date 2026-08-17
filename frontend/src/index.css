@@ -336,8 +336,54 @@ nav::after {
 	opacity: 0.55;
 }
 
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2.5rem; align-items: center; }
+
+/* Scrolling market ticker, used on the landing page */
+.ticker-wrap {
+	overflow: hidden;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-secondary);
+	padding: 0.7rem 0;
+}
+.ticker-track {
+	display: flex;
+	gap: 2.5rem;
+	width: max-content;
+	padding-left: 2.5rem;
+	animation: ticker-scroll 30s linear infinite;
+}
+.ticker-wrap:hover .ticker-track { animation-play-state: paused; }
+
+@keyframes ticker-scroll {
+	from { transform: translateX(0); }
+	to { transform: translateX(-50%); }
+}
+
+/* Scroll-reveal utility for landing-page sections */
+.reveal {
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Hero price-line draw-in, using pathLength so no manual length math is needed */
+.hero-line {
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	animation: draw-line 1.8s ease forwards 0.3s;
+}
+@keyframes draw-line {
+	to { stroke-dashoffset: 0; }
+}
+
 @media (max-width: 860px) {
-	.grid-2, .grid-trading { grid-template-columns: 1fr; }
+	.grid-2, .grid-trading, .grid-3, .hero-grid { grid-template-columns: 1fr; }
 	.page { padding: 1.5rem 1rem 3rem; }
 }
 
@@ -348,4 +394,5 @@ nav::after {
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
+	.ticker-track { animation: none !important; }
 }
