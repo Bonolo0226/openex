@@ -1,4 +1,4 @@
-# OpenEx 3.0 — Simulated Crypto Exchange & AI Trading Terminal
+# OpenEx 3.0 - Simulated Crypto Exchange & AI Trading Terminal
 
 A microservices-based simulated crypto exchange built over a 3-week capstone
 sprint: a Kotlin/Spring Boot trading backend, a React frontend, and a Python
@@ -24,7 +24,7 @@ AI/analytics service, all running locally with Docker Compose.
 
 ollama pull phi3:mini
 
-  Ollama runs on the host machine, not inside Docker — see "Known
+  Ollama runs on the host machine, not inside Docker - see "Known
   Limitations" below for why.
 
 ## Quick Start (backend + database + market data, via Docker)
@@ -94,7 +94,7 @@ Requires Postgres running (`docker compose up -d postgres`).
   cloud API.
 - **User-to-account mapping is derived, not stored.** `userId` is computed
   as `UUID.nameUUIDFromBytes(username)` rather than looked up from the
-  `users` table directly in every endpoint — functionally consistent, but
+  `users` table directly in every endpoint - functionally consistent, but
   a real production system would resolve this via a proper foreign key
   relationship.
 - **No balance-sufficiency check on order placement.** A user can place an
