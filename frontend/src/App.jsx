@@ -3,7 +3,7 @@ import Navigation from './Navigation'
 import Dashboard from './pages/Dashboard'
 import Trading from './pages/Trading'
 import Login from './pages/Login'
-import LandingPage from './pages/LandingPage'
+import Landingpage from './pages/Landingpage'
 import ChatWidget from './components/ChatWidget'
 import useAuthStore from './store/authStore'
 
