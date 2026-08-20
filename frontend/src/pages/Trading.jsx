@@ -10,9 +10,9 @@ function Trading() {
 	const [type, setType] = useState('LIMIT')
 	const [price, setPrice] = useState('')
 	const [quantity, setQuantity] = useState('')
-	const [result, setResult] = useState(null)
 	const [error, setError] = useState('')
 	const [submitting, setSubmitting] = useState(false)
+	const [myOrderIds, setMyOrderIds] = useState([])
 
 	useEffect(() => {
 		async function fetchAccounts() {
@@ -31,7 +31,6 @@ function Trading() {
 	async function handleSubmit(event) {
 		event.preventDefault()
 		setError('')
-		setResult(null)
 		setSubmitting(true)
 		const idempotencyKey = uuidv4()
 		const orderBody = {
@@ -45,7 +44,7 @@ function Trading() {
 			const response = await apiClient.post('/api/orders', orderBody, {
 				headers: { 'Idempotency-Key': idempotencyKey },
 			})
-			setResult(response.data)
+			setMyOrderIds((current) => [...current, response.data.id])
 		} catch (err) {
 			console.error('Order failed:', err)
 			setError('Order failed. Check your inputs and try again.')
@@ -144,18 +143,10 @@ function Trading() {
 						</form>
 					)}
 
-					{result && (
-						<div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
-							<h3 className="card-title">Order Result</h3>
-							<pre className="mono" style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', overflowX: 'auto', margin: 0 }}>
-								{JSON.stringify(result, null, 2)}
-							</pre>
-						</div>
-					)}
 				</div>
 
 				<div className="card">
-					<OrderBook />
+					<OrderBook myOrderIds={myOrderIds} />
 				</div>
 			</div>
 		</div>
