@@ -51,16 +51,28 @@ function PriceChart() {
 	const chartRef = useRef(null)
 
 	useEffect(() => {
+		let cancelled = false
+
 		async function fetchMarketData() {
 			try {
 				const response = await axios.get((import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:5000') + '/api/market-data')
-				setTicks(response.data)
+				if (!cancelled) {
+					setTicks(response.data)
+					setError('')
+				}
 			} catch (err) {
 				console.error('Failed to fetch market data:', err)
-				setError('Could not load market data. Is the market-data-service running?')
+				if (!cancelled) setError('Could not load market data. Is the market-data-service running?')
 			}
 		}
+
 		fetchMarketData()
+		const intervalId = setInterval(fetchMarketData, 5000)
+
+		return () => {
+			cancelled = true
+			clearInterval(intervalId)
+		}
 	}, [])
 
 	// Repaint colors immediately when the nav's light/dark toggle flips data-theme

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 
@@ -9,6 +9,10 @@ function ChatWidget() {
 	const [sending, setSending] = useState(false)
 	const token = useAuthStore((state) => state.token)
 
+	useEffect(() => {
+		setMessages([])
+	}, [token])
+
 	async function sendMessage() {
 		if (!input.trim()) return
 		const userMessage = input
@@ -17,7 +21,7 @@ function ChatWidget() {
 		setSending(true)
 		try {
 			const response = await axios.post(
-				'http://localhost:5000/api/chat',
+				(import.meta.env.VITE_MARKET_DATA_URL || 'http://localhost:5000') + '/api/chat',
 				{ message: userMessage },
 				{ headers: token ? { Authorization: `Bearer ${token}` } : {} }
 			)

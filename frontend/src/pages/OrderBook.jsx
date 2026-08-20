@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
-function OrderBook() {
+function OrderBook({ myOrderIds = [] }) {
 	const [orders, setOrders] = useState({})
+	const [myOrderStatus, setMyOrderStatus] = useState({})
 	const [connected, setConnected] = useState(false)
 
 	useEffect(() => {
@@ -13,6 +14,7 @@ function OrderBook() {
 				setConnected(true)
 				client.subscribe('/topic/orderbook', (message) => {
 					const update = JSON.parse(message.body)
+
 					setOrders((current) => {
 						const next = { ...current }
 						if (update.status === 'FILLED' || update.status === 'CANCELLED') {
@@ -22,6 +24,8 @@ function OrderBook() {
 						}
 						return next
 					})
+
+					setMyOrderStatus((current) => ({ ...current, [update.orderId]: update }))
 				})
 			},
 		})
@@ -34,7 +38,12 @@ function OrderBook() {
 	const asks = allOrders.filter((o) => o.side === 'SELL').sort((a, b) => a.price - b.price)
 	const maxQty = Math.max(1, ...allOrders.map((o) => Number(o.quantity)))
 
-	const rowStyle = (qty, color) => ({
+	const myOrders = myOrderIds
+		.map((id) => myOrderStatus[id])
+		.filter(Boolean)
+		.reverse()
+
+	const rowStyle = {
 		position: 'relative',
 		display: 'flex',
 		justifyContent: 'space-between',
@@ -43,7 +52,7 @@ function OrderBook() {
 		borderRadius: '6px',
 		overflow: 'hidden',
 		background: 'rgba(255,255,255,0.02)',
-	})
+	}
 
 	const depthBar = (qty, color) => ({
 		position: 'absolute',
@@ -55,6 +64,12 @@ function OrderBook() {
 		opacity: 0.12,
 	})
 
+	const statusColor = (status) => {
+		if (status === 'FILLED') return 'var(--green)'
+		if (status === 'CANCELLED') return 'var(--red)'
+		return 'var(--text-secondary)'
+	}
+
 	return (
 		<div>
 			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem' }}>
@@ -65,6 +80,22 @@ function OrderBook() {
 				</span>
 			</div>
 
+			{myOrders.length > 0 && (
+				<div style={{ marginBottom: '1.25rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
+					<div className="text-secondary" style={{ fontSize: '0.72rem', marginBottom: '0.6rem', fontWeight: 700 }}>
+						MY ORDERS
+					</div>
+					<div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+						{myOrders.map((order) => (
+							<div key={order.orderId} className="mono" style={rowStyle}>
+								<span>{order.side} {order.price ?? 'MKT'} × {order.quantity}</span>
+								<span style={{ color: statusColor(order.status), fontWeight: 700 }}>{order.status}</span>
+							</div>
+						))}
+					</div>
+				</div>
+			)}
+
 			<div className="grid-2">
 				<div>
 					<div className="text-secondary" style={{ fontSize: '0.72rem', marginBottom: '0.6rem', display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
@@ -73,7 +104,7 @@ function OrderBook() {
 					<div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
 						{bids.length === 0 && <p className="text-secondary" style={{ fontSize: '0.85rem' }}>No open bids</p>}
 						{bids.map((order) => (
-							<div key={order.orderId} className="mono row-hover" style={{ ...rowStyle(order.quantity), color: 'var(--green)' }}>
+							<div key={order.orderId} className="mono row-hover" style={{ ...rowStyle, color: 'var(--green)' }}>
 								<div style={depthBar(order.quantity, 'var(--green)')} />
 								<span style={{ position: 'relative' }}>{order.price}</span>
 								<span style={{ position: 'relative' }}>{order.quantity}</span>
@@ -88,7 +119,7 @@ function OrderBook() {
 					<div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
 						{asks.length === 0 && <p className="text-secondary" style={{ fontSize: '0.85rem' }}>No open asks</p>}
 						{asks.map((order) => (
-							<div key={order.orderId} className="mono row-hover" style={{ ...rowStyle(order.quantity), color: 'var(--red)' }}>
+							<div key={order.orderId} className="mono row-hover" style={{ ...rowStyle, color: 'var(--red)' }}>
 								<div style={depthBar(order.quantity, 'var(--red)')} />
 								<span style={{ position: 'relative' }}>{order.price}</span>
 								<span style={{ position: 'relative' }}>{order.quantity}</span>

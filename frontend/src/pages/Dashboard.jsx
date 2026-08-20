@@ -110,7 +110,7 @@ function Dashboard() {
 				</div>
 
 				<div className="card">
-					<h2 className="card-title">Market Price</h2>
+					<h2 className="card-title">Live Market</h2>
 					<PriceChart />
 				</div>
 			</div>
