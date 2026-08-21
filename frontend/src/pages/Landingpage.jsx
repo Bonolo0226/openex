@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import PriceChart from '../components/PriceChart'
 
 const TICKER = [
 	{ symbol: 'BTC/USD', change: '+2.4%', up: true },
@@ -186,29 +187,9 @@ function LandingPage() {
 						</div>
 					</Reveal>
 
-					<Reveal delay={150}>
+										<Reveal delay={150}>
 						<div className="card" style={{ position: 'relative', overflow: 'hidden' }}>
-							<h2 className="card-title">Market Pulse</h2>
-							<svg viewBox="0 0 400 170" style={{ width: '100%', height: 'auto', display: 'block' }}>
-								<path
-									d="M0,140 C40,120 60,150 90,110 C120,70 150,90 180,60 C210,30 240,50 270,35 C300,20 330,40 360,15 L400,8"
-									fill="none"
-									stroke="var(--border)"
-									strokeWidth="2"
-								/>
-								<path
-									className="hero-line"
-									d="M0,140 C40,120 60,150 90,110 C120,70 150,90 180,60 C210,30 240,50 270,35 C300,20 330,40 360,15 L400,8"
-									fill="none"
-									stroke="var(--accent-1)"
-									strokeWidth="2.5"
-									pathLength="1"
-								/>
-							</svg>
-							<div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-								<span className="mono text-dim" style={{ fontSize: '0.68rem' }}>24H</span>
-								<span className="badge badge-green">▲ 2.4%</span>
-							</div>
+							<PriceChart />
 						</div>
 					</Reveal>
 				</div>
