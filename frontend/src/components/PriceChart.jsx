@@ -227,15 +227,18 @@ function PriceChart() {
 		)
 	}
 
-	return (
+		return (
 		<div>
 			<div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.6rem' }}>
 				<div style={{ display: 'flex', alignItems: 'baseline', gap: '0.7rem' }}>
-					<span style={{ fontFamily: 'var(--font-display)', fontSize: '1.9rem', fontWeight: 500, letterSpacing: '-0.01em' }}>
+					<span className="mono" style={{ fontFamily: 'var(--font-display)', fontSize: '2.1rem', fontWeight: 600, letterSpacing: '-0.01em' }}>
 						{stats.last.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 					</span>
 					<span className={`badge ${stats.up ? 'badge-green' : 'badge-red'}`}>
 						{stats.up ? '▲' : '▼'} {Math.abs(stats.pctChange).toFixed(2)}%
+					</span>
+					<span className="badge" style={{ background: 'var(--green-bg)', color: 'var(--green)' }}>
+						<span className="pulse-dot" /> LIVE
 					</span>
 				</div>
 				<div style={{ display: 'flex', gap: '1rem' }}>
@@ -249,7 +252,7 @@ function PriceChart() {
 					</span>
 				</div>
 			</div>
-			<div style={{ height: '260px', position: 'relative' }}>
+			<div style={{ height: '320px', position: 'relative' }}>
 				<Line ref={chartRef} data={data} options={options} />
 			</div>
 		</div>
